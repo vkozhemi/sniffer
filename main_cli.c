@@ -2,8 +2,14 @@
 
 void 	ft_stop(int argc, char *argv[], int sock)
 {
-	if (argc == 2)
+	if (argc == 2) {
+		if (getuid() != 0)
+		{
+			printf("Error permission denied");
+			exit(EXIT_FAILURE);
+		}
 		send(sock, argv[1], sizeof(argv[1]), 0);
+	}
 	else
 	{
 		printf("Error count arguments");
@@ -15,11 +21,10 @@ void 	ft_show(int argc, char *argv[], int sock)
 {
 	regex_t				regex;
 	char				*comand;
-	char				*buff;
+	char				buff[128];
 	int					len;
 
 	if (argc == 4) {
-		printf("show: ");
 		if (!regcomp(&regex, REGEX_IP, REG_EXTENDED) &&
 			!regexec(&regex, argv[2], 0, NULL, 0) &&
 			!strcmp(argv[3], "count"))
@@ -29,7 +34,7 @@ void 	ft_show(int argc, char *argv[], int sock)
 			if ((len = recv(sock, buff, MAX_LINE_LEN, 0)) < 0) {
 				exit(EXIT_FAILURE);
 			}
-			printf("%s\n", buff);
+			printf("packets: %s\n", buff);
 		}
 		else {
 			printf("wrong IP\n");
@@ -134,11 +139,6 @@ void	ft_start(int argc, char **argv)
 {
 	if (argc == 2 || argc == 3) 
 	{
-		if (getuid() != 0)
-		{
-			printf("Error permission denied");
-			exit(EXIT_FAILURE);
-		}
 		strcpy(config, find_device(argv[2])); 
 		fork_process();
 	}

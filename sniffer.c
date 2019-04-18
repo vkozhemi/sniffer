@@ -127,6 +127,11 @@ void	*sniffer()
 
 void	fork_process()
 {
+	if (getuid() != 0)
+	{
+		printf("Error permission denied");
+		exit(EXIT_FAILURE);
+	}
 	pcap = NULL;
 	root_nod = NULL;
 	/* start daemon */
